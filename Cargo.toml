@@ -1,0 +1,29 @@
+[package]
+name = "prusaconnect_uploader"
+version = "0.0.0"
+edition = "2021"
+authors = ["John Lyon-Smith <john@escapegallery.net>"]
+description = "Camera still uploader for Prusa Connect"
+repository = "https://github.com/jlyonsmith/prusaconnect_uploader"
+readme = "README.md"
+keywords = []
+categories = []
+license = "Unlicense"
+
+[dependencies]
+anyhow = "1.0.86"
+clap = { version = "4.5", features = ["derive", "env"] }
+lazy_static = "1.5"
+thiserror = "2.0"
+yansi = "1.0"
+
+[dev-dependencies]
+criterion = "^0.5"
+
+[[bench]]
+name = "benchmarks"
+harness = false
+
+[[bin]]
+name = "prusaconnect-uploader"
+path = "src/bin/prusaconnect_uploader.rs"
