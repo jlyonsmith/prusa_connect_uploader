@@ -1,14 +1,9 @@
 mod log_macros;
 
-use anyhow::Context;
 use clap::Parser;
 use core::fmt::Arguments;
-use std::{
-    error::Error,
-    fs::File,
-    io::{self, Read, Write},
-    path::PathBuf,
-};
+use duct::cmd;
+use std::{error::Error, fs, path::PathBuf, thread::sleep, time::Duration};
 
 pub trait PrusaconnectUploaderLog {
     fn output(self: &Self, args: Arguments);
@@ -24,40 +19,28 @@ pub struct PrusaconnectUploaderTool<'a> {
 #[clap(version, about, long_about = None)]
 struct Cli {
     /// Disable colors in output
-    #[arg(long = "no-color", short = 'n', env = "NO_CLI_COLOR")]
+    #[arg(long = "no-color", env = "NO_CLI_COLOR")]
     no_color: bool,
 
-    /// The input file
-    #[arg(value_name = "INPUT_FILE")]
-    input_file: Option<PathBuf>,
+    /// Snapshot interval
+    #[arg(long = "interval", default_value_t = SNAPSHOT_INTERVAL)]
+    interval: u64,
 
-    /// The output file
-    #[arg(value_name = "OUTPUT_FILE")]
-    output_file: Option<PathBuf>,
+    /// API Token
+    #[arg(long = "token")]
+    token: String,
+
+    /// API Fingerprint
+    #[arg(long = "fingerprint")]
+    fingerprint: String,
+
+    /// Debug
+    #[arg(long = "debug")]
+    debug: bool,
 }
 
-impl Cli {
-    fn get_output(&self) -> anyhow::Result<Box<dyn Write>> {
-        match self.output_file {
-            Some(ref path) => File::create(path)
-                .context(format!(
-                    "Unable to create file '{}'",
-                    path.to_string_lossy()
-                ))
-                .map(|f| Box::new(f) as Box<dyn Write>),
-            None => Ok(Box::new(io::stdout())),
-        }
-    }
-
-    fn get_input(&self) -> anyhow::Result<Box<dyn Read>> {
-        match self.input_file {
-            Some(ref path) => File::open(path)
-                .context(format!("Unable to open file '{}'", path.to_string_lossy()))
-                .map(|f| Box::new(f) as Box<dyn Read>),
-            None => Ok(Box::new(io::stdin())),
-        }
-    }
-}
+const HTTPS_URL: &str = "https://webcam.connect.prusa3d.com/c/snapshot";
+const SNAPSHOT_INTERVAL: u64 = 10;
 
 impl<'a> PrusaconnectUploaderTool<'a> {
     pub fn new(log: &'a dyn PrusaconnectUploaderLog) -> PrusaconnectUploaderTool<'a> {
@@ -76,13 +59,100 @@ impl<'a> PrusaconnectUploaderTool<'a> {
             }
         };
 
-        let mut content = String::new();
+        let mut delay = 0;
 
-        cli.get_input()?.read_to_string(&mut content)?;
+        loop {
+            sleep(Duration::from_secs(delay));
 
-        write!(cli.get_output()?, "{}", content)?;
+            let jpg_path = PathBuf::from(format!("/dev/shm/camera_{}.jpg", cli.fingerprint));
 
-        Ok(())
+            match cmd!(
+                "rpicam-still",
+                "--immediate",
+                "--nopreview",
+                "--mode",
+                "2592:1944:12:P",
+                "--lores-width",
+                "0",
+                "--lores-height",
+                "0",
+                "--thumb",
+                "none",
+                "--output",
+                &jpg_path,
+            )
+            .stderr_to_stdout()
+            .read()
+            {
+                Err(_) => {
+                    error!(self.log, "{}", "Unable to generate snapshot");
+                    delay = cli.interval * 3;
+                    continue;
+                }
+                Ok(output) => {
+                    if cli.debug {
+                        output!(self.log, "{}", output);
+                    }
+                }
+            };
+
+            let metadata = fs::metadata(&jpg_path).unwrap();
+
+            output!(
+                self.log,
+                "Captured file '{}' ({} bytes)",
+                jpg_path.to_string_lossy(),
+                metadata.len()
+            );
+
+            let verbose = cli.debug;
+            match cmd!(
+                "curl",
+                "-X",
+                "PUT",
+                HTTPS_URL,
+                "-H",
+                "Accept: text/plain",
+                "-H",
+                "Content-type: image/jpg",
+                "-H",
+                format!("Fingerprint: {}", &cli.fingerprint),
+                "-H",
+                format!("Token: {}", &cli.token),
+                "-H",
+                format!("Content-length: {}", metadata.len()),
+                "--data-binary",
+                format!("@{}", jpg_path.to_string_lossy()),
+                "--no-progress-meter",
+                "--compressed",
+                "--max-time",
+                "5",
+            )
+            .stderr_to_stdout()
+            .before_spawn(move |cmd| {
+                if verbose {
+                    cmd.arg("--verbose");
+                }
+                Ok(())
+            })
+            .read()
+            {
+                Err(_) => {
+                    error!(self.log, "{}", "Unable to upload snapshot");
+                    delay = cli.interval * 3;
+                    continue;
+                }
+                Ok(output) => {
+                    if cli.debug {
+                        output!(self.log, "{}", output);
+                    }
+                    output!(self.log, "Successfully uploaded to '{}'", HTTPS_URL);
+                }
+            };
+
+            output!(self.log, "Waiting {} seconds...", cli.interval);
+            delay = cli.interval;
+        }
     }
 }
 

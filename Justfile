@@ -1,3 +1,6 @@
+list:
+	just --list
+
 coverage OPEN='':
   #!/usr/bin/env fish
   set -x RUSTFLAGS '-C instrument-coverage'
@@ -25,6 +28,11 @@ doc OPEN='':
   else
     cargo doc
   end
+
+cross USER_AT_HOST='':
+	#!/usr/bin/env fish
+	cross build --release --target aarch64-unknown-linux-gnu
+	and scp (pwd)/target/aarch64-unknown-linux-gnu/release/prusaconnect-uploader '{{USER_AT_HOST}}':
 
 release OPERATION='incrPatch':
   #!/usr/bin/env fish

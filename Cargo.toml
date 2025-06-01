@@ -13,6 +13,7 @@ license = "Unlicense"
 [dependencies]
 anyhow = "1.0.86"
 clap = { version = "4.5", features = ["derive", "env"] }
+duct = "1.0.0"
 lazy_static = "1.5"
 thiserror = "2.0"
 yansi = "1.0"
@@ -27,3 +28,6 @@ harness = false
 [[bin]]
 name = "prusaconnect-uploader"
 path = "src/bin/prusaconnect_uploader.rs"
+
+[profile.release]
+strip = "symbols"
