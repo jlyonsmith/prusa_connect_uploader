@@ -5,14 +5,14 @@ use core::fmt::Arguments;
 use duct::cmd;
 use std::{error::Error, fs, path::PathBuf, thread::sleep, time::Duration};
 
-pub trait PrusaconnectUploaderLog {
+pub trait PrusaConnectUploaderLog {
     fn output(self: &Self, args: Arguments);
     fn warning(self: &Self, args: Arguments);
     fn error(self: &Self, args: Arguments);
 }
 
-pub struct PrusaconnectUploaderTool<'a> {
-    log: &'a dyn PrusaconnectUploaderLog,
+pub struct PrusaConnectUploaderTool<'a> {
+    log: &'a dyn PrusaConnectUploaderLog,
 }
 
 #[derive(Parser)]
@@ -42,9 +42,9 @@ struct Cli {
 const HTTPS_URL: &str = "https://webcam.connect.prusa3d.com/c/snapshot";
 const SNAPSHOT_INTERVAL: u64 = 10;
 
-impl<'a> PrusaconnectUploaderTool<'a> {
-    pub fn new(log: &'a dyn PrusaconnectUploaderLog) -> PrusaconnectUploaderTool<'a> {
-        PrusaconnectUploaderTool { log }
+impl<'a> PrusaConnectUploaderTool<'a> {
+    pub fn new(log: &'a dyn PrusaConnectUploaderLog) -> PrusaConnectUploaderTool<'a> {
+        PrusaConnectUploaderTool { log }
     }
 
     pub fn run(
@@ -170,14 +170,14 @@ mod tests {
             }
         }
 
-        impl PrusaconnectUploaderLog for TestLogger {
+        impl PrusaConnectUploaderLog for TestLogger {
             fn output(self: &Self, _args: Arguments) {}
             fn warning(self: &Self, _args: Arguments) {}
             fn error(self: &Self, _args: Arguments) {}
         }
 
         let logger = TestLogger::new();
-        let mut tool = PrusaconnectUploaderTool::new(&logger);
+        let mut tool = PrusaConnectUploaderTool::new(&logger);
         let args: Vec<std::ffi::OsString> = vec!["".into(), "--help".into()];
 
         tool.run(args).unwrap();

@@ -1,8 +1,8 @@
-# Prusaconnect Uploader
+# Prusa Connect Uploader
 
-[![coverage](https://shields.io/endpoint?url=https://raw.githubusercontent.com/jlyonsmith/prusaconnect_uploader/main/coverage.json)](https://github.com/jlyonsmith/prusaconnect_uploader/blob/main/coverage.json)
-[![Crates.io](https://img.shields.io/crates/v/prusaconnect_uploader.svg)](https://crates.io/crates/prusaconnect_uploader)
-[![Docs.rs](https://docs.rs/prusaconnect_uploader/badge.svg)](https://docs.rs/prusaconnect_uploader)
+[![coverage](https://shields.io/endpoint?url=https://raw.githubusercontent.com/jlyonsmith/prusa_connect_uploader/main/coverage.json)](https://github.com/jlyonsmith/prusa_connect_uploader/blob/main/coverage.json)
+[![Crates.io](https://img.shields.io/crates/v/prusa_connect_uploader.svg)](https://crates.io/crates/prusa_connect_uploader)
+[![Docs.rs](https://docs.rs/prusa_connect_uploader/badge.svg)](https://docs.rs/prusa_connect_uploader)
 
 ## Summary
 
@@ -58,6 +58,6 @@ systemctl start prusa-connect-uploader@prusa-env.service
 systemctl status prusa-connect-uploader@prusa-env.service
 ```
 
-If all is well you will see the capture file, then the successful upload to Prusa Connect. Note that your printer must switched on an be connected to Prusa Connect for uploads to work.
+If all is well you will see the capture file, then the successful upload to Prusa Connect. Note that your printer must switched on and be sending telemetry to Prusa Connect for uploads to work.
 
-If you are building from source, I recommend you use [Cross](https://github.com/cross-rs/cross) to cross compile for `--target aarch64-unknown-linux-gnu` if uploading to a Raspberry Pi. You can use the command `just cross user@host` to compile and upload in one step.
+If you are building from source, I recommend you use [Cross](https://github.com/cross-rs/cross) to cross compile for `--target aarch64-unknown-linux-gnu` and then `scp` the binary to your Raspberry Pi. You can use the command `just cross user@host` in the project to compile and upload in one step. See [Just](https://github.com/casey/just).

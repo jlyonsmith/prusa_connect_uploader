@@ -1,16 +1,16 @@
 use core::fmt::Arguments;
-use prusa_connect_uploader::{error, PrusaconnectUploaderLog, PrusaconnectUploaderTool};
+use prusa_connect_uploader::{error, PrusaConnectUploaderLog, PrusaConnectUploaderTool};
 use yansi::Paint;
 
-struct PrusaconnectUploaderLogger;
+struct PrusaConnectUploaderLogger;
 
-impl PrusaconnectUploaderLogger {
-    fn new() -> PrusaconnectUploaderLogger {
-        PrusaconnectUploaderLogger {}
+impl PrusaConnectUploaderLogger {
+    fn new() -> PrusaConnectUploaderLogger {
+        PrusaConnectUploaderLogger {}
     }
 }
 
-impl PrusaconnectUploaderLog for PrusaconnectUploaderLogger {
+impl PrusaConnectUploaderLog for PrusaConnectUploaderLogger {
     fn output(self: &Self, args: Arguments) {
         println!("{}", args);
     }
@@ -23,9 +23,9 @@ impl PrusaconnectUploaderLog for PrusaconnectUploaderLogger {
 }
 
 fn main() {
-    let logger = PrusaconnectUploaderLogger::new();
+    let logger = PrusaConnectUploaderLogger::new();
 
-    if let Err(error) = PrusaconnectUploaderTool::new(&logger).run(std::env::args_os()) {
+    if let Err(error) = PrusaConnectUploaderTool::new(&logger).run(std::env::args_os()) {
         error!(logger, "{}", error);
         std::process::exit(1);
     }

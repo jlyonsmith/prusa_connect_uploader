@@ -21,10 +21,6 @@ yansi = "1.0"
 [dev-dependencies]
 criterion = "^0.5"
 
-[[bench]]
-name = "benchmarks"
-harness = false
-
 [[bin]]
 name = "prusa-connect-uploader"
 path = "src/bin/prusa_connect_uploader.rs"
