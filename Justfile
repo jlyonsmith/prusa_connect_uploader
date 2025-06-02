@@ -22,10 +22,29 @@ doc OPEN='':
     cargo doc
   end
 
-cross USER_AT_HOST='':
+cross:
 	#!/usr/bin/env fish
 	cross build --release --target aarch64-unknown-linux-gnu
-	and scp (pwd)/target/aarch64-unknown-linux-gnu/release/prusa-connect-uploader '{{USER_AT_HOST}}':
+	cross build --release --target arm-unknown-linux-gnueabihf
+
+upload FLAVOR='' USER_AT_HOST='':
+	#!/usr/bin/env fish
+	set flavor {{FLAVOR}}
+	set user_at_host {{USER_AT_HOST}}
+	if test -z "$flavor" -o -z "$user_at_host"
+		echo Supply FLAVOR and USER_AT_HOST
+		exit 1
+	end
+
+	switch $flavor
+	case aarch64
+		scp (pwd)/target/aarch64-unknown-linux-gnu/release/prusa-connect-uploader "$user_at_host":
+	case arm
+		scp (pwd)/target/arm-unknown-linux-gnueabihf/release/prusa-connect-uploader "$user_at_host":
+	case '*'
+		echo Choose aarch64 or arm architectures
+		exit 1
+	end
 
 release OPERATION='incrPatch':
   #!/usr/bin/env fish
