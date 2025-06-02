@@ -27,6 +27,16 @@ cross:
 	cross build --release --target aarch64-unknown-linux-gnu
 	cross build --release --target arm-unknown-linux-gnueabihf
 
+pack:
+	#!/usr/bin/env fish
+	rm scratch/*.tar.gz
+	pushd target/aarch64-unknown-linux-gnu/release
+	tar --no-xattrs -cvzf ../../../scratch/prusa_connect_uploader-0.1.0-aarch64-unknown-linux-gnu.tar.gz prusa-connect-uploader
+	popd
+	pushd target/arm-unknown-linux-gnueabihf/release/
+	tar --no-xattrs -cvzf ../../../scratch/prusa_connect_uploader-0.1.0-arm-unknown-linux-gnueabihf.tar.gz prusa-connect-uploader
+	popd
+
 upload FLAVOR='' USER_AT_HOST='':
 	#!/usr/bin/env fish
 	set flavor {{FLAVOR}}
