@@ -1,0 +1,16 @@
+[Unit]
+Description=Prusa Connect Camera Upload Service
+After=network.target systemd-udev-trigger.service
+Wants=network.target
+Requires=systemd-udev-trigger.service
+
+[Service]
+User=pi
+Group=pi
+EnvironmentFile=/home/pi/.%i
+ExecStart=/usr/local/bin/prusa-camera-uploader
+Restart=always
+RestartSec=15
+
+[Install]
+WantedBy=multi-user.target

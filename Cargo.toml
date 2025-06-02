@@ -1,10 +1,10 @@
 [package]
-name = "prusaconnect_uploader"
+name = "prusa_connect_uploader"
 version = "0.0.0"
 edition = "2021"
 authors = ["John Lyon-Smith <john@escapegallery.net>"]
 description = "Camera still uploader for Prusa Connect"
-repository = "https://github.com/jlyonsmith/prusaconnect_uploader"
+repository = "https://github.com/jlyonsmith/prusa_connect_uploader"
 readme = "README.md"
 keywords = []
 categories = []
@@ -26,8 +26,8 @@ name = "benchmarks"
 harness = false
 
 [[bin]]
-name = "prusaconnect-uploader"
-path = "src/bin/prusaconnect_uploader.rs"
+name = "prusa-connect-uploader"
+path = "src/bin/prusa_connect_uploader.rs"
 
 [profile.release]
 strip = "symbols"

@@ -1,5 +1,5 @@
 use core::fmt::Arguments;
-use prusaconnect_uploader::{error, PrusaconnectUploaderLog, PrusaconnectUploaderTool};
+use prusa_connect_uploader::{error, PrusaconnectUploaderLog, PrusaconnectUploaderTool};
 use yansi::Paint;
 
 struct PrusaconnectUploaderLogger;

@@ -32,7 +32,7 @@ doc OPEN='':
 cross USER_AT_HOST='':
 	#!/usr/bin/env fish
 	cross build --release --target aarch64-unknown-linux-gnu
-	and scp (pwd)/target/aarch64-unknown-linux-gnu/release/prusaconnect-uploader '{{USER_AT_HOST}}':
+	and scp (pwd)/target/aarch64-unknown-linux-gnu/release/prusa-connect-uploader '{{USER_AT_HOST}}':
 
 release OPERATION='incrPatch':
   #!/usr/bin/env fish

@@ -23,15 +23,15 @@ struct Cli {
     no_color: bool,
 
     /// Snapshot interval
-    #[arg(long = "interval", default_value_t = SNAPSHOT_INTERVAL)]
+    #[arg(long = "interval", default_value_t = SNAPSHOT_INTERVAL, env = "PRUSA_CONNECT_SNAPSHOT_INTERVAL")]
     interval: u64,
 
     /// API Token
-    #[arg(long = "token")]
+    #[arg(long = "token", env = "PRUSA_CONNECT_CAMERA_TOKEN")]
     token: String,
 
     /// API Fingerprint
-    #[arg(long = "fingerprint")]
+    #[arg(long = "fingerprint", env = "PRUSA_CONNECT_CAMERA_FINGERPRINT")]
     fingerprint: String,
 
     /// Debug
