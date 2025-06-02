@@ -1,6 +1,6 @@
 [package]
 name = "prusa_connect_uploader"
-version = "0.0.0"
+version = "0.1.0"
 edition = "2021"
 authors = ["John Lyon-Smith <john@escapegallery.net>"]
 description = "Camera still uploader for Prusa Connect"
